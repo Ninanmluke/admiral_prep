@@ -1,0 +1,107 @@
+diff --git a/analysis/ae_summary.R b/analysis/ae_summary.R
+index e13715c..d2a3a4b 100644
+--- a/analysis/ae_summary.R
++++ b/analysis/ae_summary.R
+@@ -3,7 +3,7 @@
+ adae <- read.csv("data/synthetic_adae.csv", stringsAsFactors = FALSE)
+ 
+ ae_summary <- adae[
+-  adae$AESEV == "SEVERE",
++  adae$AESEV %in% c("SEVERE", "LIFE THREATENING"),
+   c("USUBJID", "AETERM", "AESEV")
+ ]
+ 
+diff --git a/analysis/ae_summary.py b/analysis/ae_summary.py
+index ab48db9..3512c12 100644
+--- a/analysis/ae_summary.py
++++ b/analysis/ae_summary.py
+@@ -1,4 +1,4 @@
+-"""Create the synthetic adverse-event summary for requirement AE-3."""
++"""Create the synthetic adverse-event summary for requirement AE-4."""
+ 
+ from __future__ import annotations
+ 
+@@ -18,7 +18,7 @@ def summarize_adverse_events(
+     return [
+         {column: record[column] for column in OUTPUT_COLUMNS}
+         for record in records
+-        if record["AESEV"] == "SEVERE"
++        if record["AESEV"] in {"SEVERE", "LIFE THREATENING"}
+     ]
+ 
+ 
+diff --git a/analysis/ae_summary.sas b/analysis/ae_summary.sas
+index fd8e840..a2f8e5b 100644
+--- a/analysis/ae_summary.sas
++++ b/analysis/ae_summary.sas
+@@ -1,8 +1,8 @@
+-/* Synthetic implementation of requirement AE-3. */
++/* Synthetic implementation of requirement AE-4. */
+ 
+ proc sql;
+   create table ae_summary as
+   select USUBJID, AETERM, AESEV
+   from synthetic_adae
+-  where AESEV = "SEVERE";
++  where AESEV in ("SEVERE", "LIFE THREATENING");
+ quit;
+diff --git a/checks/expected-output.md b/checks/expected-output.md
+index b0f8a4a..6281f68 100644
+--- a/checks/expected-output.md
++++ b/checks/expected-output.md
+@@ -1,11 +1,13 @@
+-# Expected output for AE-3
++# Expected output for AE-4
+ 
+-The current severe-only requirement produces two records:
++The updated requirement produces four records:
+ 
+ | USUBJID | AETERM | AESEV |
+ |---|---|---|
+ | 003 | Neutropenia | SEVERE |
++| 004 | Anaphylaxis | LIFE THREATENING |
+ | 006 | Sepsis | SEVERE |
++| 007 | Cardiac arrest | LIFE THREATENING |
+ 
+-Expected record count: **2**
++Expected record count: **4**
+ 
+ If the requirement changes, this file must be updated and reviewed with the implementation and automated tests.
+diff --git a/requirements/analysis-requirements.md b/requirements/analysis-requirements.md
+index 556e8f9..dd5e014 100644
+--- a/requirements/analysis-requirements.md
++++ b/requirements/analysis-requirements.md
+@@ -1,8 +1,8 @@
+ # Adverse-event summary requirements
+ 
+-## AE-3: Severe-event summary
++## AE-4: Medically significant event summary
+ 
+-The adverse-event summary must include records where `AESEV` is exactly `SEVERE`.
++The adverse-event summary must include records where `AESEV` is exactly `SEVERE` or `LIFE THREATENING`.
+ 
+ ### Output
+ 
+diff --git a/tests/test_ae_summary.py b/tests/test_ae_summary.py
+index 2a3c98e..ae7b776 100644
+--- a/tests/test_ae_summary.py
++++ b/tests/test_ae_summary.py
+@@ -13,11 +13,14 @@ class AdverseEventSummaryTests(unittest.TestCase):
+         cls.records = load_records(ROOT / "data" / "synthetic_adae.csv")
+         cls.summary = summarize_adverse_events(cls.records)
+ 
+-    def test_includes_two_severe_events(self) -> None:
+-        self.assertEqual(len(self.summary), 2)
++    def test_includes_four_medically_significant_events(self) -> None:
++        self.assertEqual(len(self.summary), 4)
+ 
+-    def test_contains_only_severe_events(self) -> None:
+-        self.assertEqual({record["AESEV"] for record in self.summary}, {"SEVERE"})
++    def test_contains_expected_severity_values(self) -> None:
++        self.assertEqual(
++            {record["AESEV"] for record in self.summary},
++            {"SEVERE", "LIFE THREATENING"},
++        )
+ 
+     def test_preserves_output_columns(self) -> None:
+         self.assertTrue(self.summary)

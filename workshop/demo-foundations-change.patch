@@ -1,0 +1,11 @@
+diff --git a/checks/expected-output.md b/checks/expected-output.md
+index b0f8a4a..47cb626 100644
+--- a/checks/expected-output.md
++++ b/checks/expected-output.md
+@@ -8,4 +8,6 @@ The current severe-only requirement produces two records:
+ 
+ Expected record count: **2**
+ 
++Reviewers should confirm the count against the approved requirement before accepting a change.
++
+ If the requirement changes, this file must be updated and reviewed with the implementation and automated tests.

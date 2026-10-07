@@ -1,0 +1,48 @@
+name: Analysis change
+description: Define a bounded synthetic analysis change for the workshop
+title: "[Analysis] "
+labels:
+  - workshop
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Create this issue in your approved writable work repository, not the private read-only reference at https://github.com/johnsont1693/scientific-workflow-workshop.
+        Use synthetic data only. Do not include patient, real customer, proprietary information, or secrets.
+        Use this issue as context for VS Code Copilot Agent mode; do not assign it to a cloud coding agent.
+        Humans approve the plan and tools, then create the branch, commit, push, and open the pull request.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What outcome is needed?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Relevant repository context
+      description: Which requirements, analysis files, references, or checks should guide the work?
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: What must remain unchanged or out of scope?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Include local test evidence and human scientific/security review. How will a reviewer determine whether the proposal is ready for further validation?
+    validations:
+      required: true
+  - type: textarea
+    id: review
+    attributes:
+      label: Human review questions
+      description: What scientific, terminology, validation, or policy questions must remain visible?
+    validations:
+      required: true
